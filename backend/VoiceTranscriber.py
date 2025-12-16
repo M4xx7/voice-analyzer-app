@@ -1,0 +1,30 @@
+from faster_whisper import WhisperModel
+
+
+class VoiceTranscriber:
+    def __init__(self, model_size="small"):
+        # Models: "tiny", "base", "small", "medium", "large-v3"
+        print(f"Loading Faster-Whisper model '{model_size}'...")
+        self.model = WhisperModel(model_size, device="cpu", compute_type="int8")
+
+    def transcribe(self, audio_path):
+        segments, info = self.model.transcribe(
+            audio_path,
+            beam_size=5,
+            vad_filter=True,
+            vad_parameters=dict(min_silence_duration_ms=500),
+            word_timestamps=False
+        )
+
+        duration = info.duration
+
+        segments = list(segments)
+
+        full_text = " ".join([segment.text for segment in segments]).strip()
+
+
+        return {
+            "content": full_text,
+            "language": info.language,
+            "duration": duration
+        }
