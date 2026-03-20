@@ -1,5 +1,8 @@
 # Voice Analyzer
 
+![Home Page](docs/screenshots/home.jpg)
+
+
 **Voice Analyzer** is made for analyzing and evaluating human speech audio. It consists of a mobile application built with Expo Go (React Native + TypeScript) and a Python backend API that processes audio, extracts features, and returns analysis results.
 
 ## Project Architecture
@@ -12,6 +15,11 @@ The mobile app provides the user interface and is written in TypeScript using Re
 The app contains two main pages:
 * **Analyze** – extracts linguistic and speech characteristics
 * **Evaluate** – assesses overall audio quality
+
+![Analyze Page](docs/screenshots/analyze.jpg)
+
+![Home Page](docs/screenshots/evaluation.jpg)
+
 
 On both pages, users can:
 * record audio directly from the device microphone
