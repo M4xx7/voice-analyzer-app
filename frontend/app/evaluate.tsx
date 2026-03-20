@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { typography } from './styles/typography';
 import Icon from '../components/Icon';
 import { colors } from './styles/colors';
+import { styles } from './styles/common';
 import PrimaryBtn from '@/components/PrimaryBtn';
 import PlaybackControlBtn from '@/components/PlaybackControlBtn';
 import { togglePlayback } from '../utils/togglePlayback';
@@ -60,36 +61,30 @@ export default function Evaluate() {
                             <View style={styles.container}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Text style={typography.subtitle}>pitch variation</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.jitter.toFixed(2))}</Text>
+                                    <Text style={typography.metric}>{Number(result.audio_metrics.jitter.toFixed(2))}%</Text>
                                 </View>
                                 <View style={{ alignItems: 'center' }}>
                                     <Text style={typography.subtitle}>volume variation</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.shimmer.toFixed(2))}</Text>
+                                    <Text style={typography.metric}>{Number(result.audio_metrics.shimmer.toFixed(2))}%</Text>
                                 </View>
                             </View>
                             <View style={styles.container}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Text style={typography.subtitle}>voice cleanliness</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.hnr.toFixed(2))}</Text>
+                                    <Text style={typography.metric}>{Number(result.audio_metrics.hnr.toFixed(2))} dB</Text>
                                 </View>
                                 <View style={{ alignItems: 'center' }}>
                                     <Text style={typography.subtitle}>background noise</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.snr.toFixed(2))}</Text>
+                                    <Text style={typography.metric}>{Number(result.audio_metrics.snr.toFixed(2))} dB</Text>
                                 </View>
                             </View>
                         </View>
 
-                        <Text style={[typography.subtitle, { alignSelf: 'center' }]}>Score</Text>
+                        <Text style={[typography.audio, { alignSelf: 'center' }]}>Score</Text>
 
-                        <View style={[styles.container, { marginVertical: 20 }]}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={typography.subtitle}>quality score</Text>
-                                <Text style={typography.metric}>{Number(result.score.score.toFixed(1))}</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={typography.subtitle}>label</Text>
-                                <Text style={typography.metric}>{result.score.label}</Text>
-                            </View>
+                        <View style={{ alignItems: 'center', marginVertical: 10 }}>
+
+                            <Text style={typography.metric}>{Number(result.score.score.toFixed(0))}/100</Text>
                         </View>
 
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
@@ -139,38 +134,3 @@ export default function Evaluate() {
         </View >
     );
 }
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        gap: 40,
-        justifyContent: "center",
-        padding: 20,
-    },
-
-    iconWrapper: {
-        flex: 1,
-        flexDirection: 'row',
-        gap: 5
-    },
-
-    bottomBar: {
-        position: 'fixed',
-        padding: 20,
-        marginBottom: 40,
-        backgroundColor: colors.background
-    },
-
-    loadingContainer: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-});

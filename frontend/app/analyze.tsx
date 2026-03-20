@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
+import {Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { typography } from './styles/typography';
 import Icon from '../components/Icon';
 import { colors } from './styles/colors';
+import { styles } from './styles/common';
 import PrimaryBtn from '@/components/PrimaryBtn';
 import PlaybackControlBtn from '@/components/PlaybackControlBtn';
 import { togglePlayback } from '../utils/togglePlayback';
@@ -142,43 +143,4 @@ export default function Analyze() {
 
         </View >
     );
-}
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        gap: 40,
-        justifyContent: "center",
-        padding: 20,
-    },
-
-    iconWrapper: {
-        flex: 1,
-        flexDirection: 'row',
-        gap: 5
-    },
-
-    bottomBar: {
-        position: 'fixed',
-        padding: 20,
-        marginBottom: 40,
-        backgroundColor: colors.background
-    },
-
-    loadingContainer: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-});
-
-function createSound(uri: string) {
-    throw new Error('Function not implemented.');
 }
