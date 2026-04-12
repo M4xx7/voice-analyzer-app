@@ -1,10 +1,11 @@
 from faster_whisper import WhisperModel
 
+from schemas.transcription import TranscriptionResult
+
 
 class VoiceTranscriber:
     def __init__(self, model_size="small"):
         # Models: "tiny", "base", "small", "medium", "large-v3"
-        print(f"Loading Faster-Whisper model '{model_size}'...")
         self.model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
     def transcribe(self, audio_path):
@@ -16,15 +17,12 @@ class VoiceTranscriber:
             word_timestamps=False
         )
 
-        duration = info.duration
-
         segments = list(segments)
 
         full_text = " ".join([segment.text for segment in segments]).strip()
 
-
-        return {
-            "content": full_text,
-            "language": info.language,
-            "duration": duration
-        }
+        return TranscriptionResult(
+            content=full_text,
+            language=info.language,
+            duration=info.duration
+        )
