@@ -5,7 +5,6 @@ from schemas.transcription import TranscriptionResult
 
 class VoiceTranscriber:
     def __init__(self, model_size="small"):
-        # Models: "tiny", "base", "small", "medium", "large-v3"
         self.model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
     def transcribe(self, audio_path):

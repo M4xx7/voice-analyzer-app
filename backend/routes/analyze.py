@@ -36,15 +36,15 @@ async def analyze_audio(file: UploadFile = File(...)):
             file_to_analyze = convert_audio_to_wav(original_path)
 
         with analyzer_lock:
-            sound_purity = await run_in_threadpool(analyzer.get_sound_purity, file_to_analyze)
             transcript_data = await run_in_threadpool(analyzer.get_transcriber_data, file_to_analyze)
+            sound_purity = await run_in_threadpool(analyzer.get_sound_purity, file_to_analyze)
             speech_intensity = analyzer.get_speech_intensity(file_to_analyze)
 
         return {
-            "transcription": TranscriberData(**transcript_data),
+            "transcription": transcript_data,
             "metrics": {
                 "speech_intensity": speech_intensity,
-                "purity": PurityResult(**sound_purity),
+                "purity": sound_purity,
             }
         }
 

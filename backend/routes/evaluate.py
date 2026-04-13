@@ -7,7 +7,6 @@ from threading import Lock
 
 from services.voice_analyzer import VoiceAnalyzer
 from schemas.audio_analysis import AudioAnalysisResult, PurityResult
-from schemas.transcription import TranscriberData
 from core.audio_utils import convert_audio_to_wav
 
 router = APIRouter()
@@ -46,8 +45,8 @@ async def evaluate_audio(file: UploadFile = File(...)):
             quality, label = analyzer.evaluate_audio_quality(jitter, shimmer, hnr, snr)
 
         return AudioAnalysisResult(
-            purity=PurityResult(**purity_data),
-            transcriber=TranscriberData(**transcriber_data),
+            purity=purity_data,
+            transcriber=transcriber_data,
             speech_intensity=speech_intensity,
 
             jitter=jitter,
