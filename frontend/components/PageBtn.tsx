@@ -21,7 +21,7 @@ const PageBtn = ({ onPress, iconName, iconHeight, iconWidth }) => {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: colors.gray,
+        backgroundColor: colors.surfaceSecondary,
         width: 140,
         height: 140,
         borderRadius: 18,

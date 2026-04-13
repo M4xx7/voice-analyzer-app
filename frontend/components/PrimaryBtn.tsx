@@ -16,7 +16,7 @@ const PrimaryBtn = ({ title, onPress }) => {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: colors.gray,
+        backgroundColor: colors.surfaceSecondary,
         paddingVertical: 12,
         paddingHorizontal: 14,
         borderRadius: 8,

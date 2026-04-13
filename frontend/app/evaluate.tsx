@@ -6,43 +6,30 @@ import { colors } from './styles/colors';
 import { styles } from './styles/common';
 import PrimaryBtn from '@/components/PrimaryBtn';
 import PlaybackControlBtn from '@/components/PlaybackControlBtn';
-import { togglePlayback } from '../utils/togglePlayback';
 import { startRecording, stopRecording } from '../utils/recording';
 import { pickAndUpload, uploadRecordedAudio } from '../utils/upload';
 import { EVALUATE_URL } from './constants/constants';
-
-
+import AudioBottomBar from '@/components/AudioBottomBar';
+import MetricDisplay from '../components/MetricDisplay';
+import { useAudioProcessor } from '@/hooks/useAudioProcessor';
 
 export default function Evaluate() {
 
-    const API_URL = EVALUATE_URL;
 
-    const [loading, setLoading] = useState(false);
-    const [recording, setRecording] = useState(null);
-    const [recordedUri, setRecordedUri] = useState(null);
-    const [currentAudioName, setCurrentAudioName] = useState("");
-    const [uploadedUri, setUploadedUri] = useState(null);
-    const [sound, setSound] = useState(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [result, setResult] = useState(null);
-
-    const onTogglePlayback = async () => {
-        await togglePlayback(isPlaying, sound, setIsPlaying);
-    }
-    const onStartRecording = async () => {
-        await startRecording(setRecording);
-    }
-    const onStopRecording = async () => {
-        await stopRecording(recording, setRecording, setRecordedUri, setCurrentAudioName);
-    }
-    const onUploadRecordedAudio = async () => {
-        await uploadRecordedAudio(API_URL, recordedUri, setRecordedUri, setLoading, setResult, setIsPlaying, setSound);
-    }
-    const onPickAndUpload = async () => {
-        await pickAndUpload(API_URL, setCurrentAudioName, setUploadedUri, setLoading, setResult, setIsPlaying, setSound);
-    }
-
-
+    const {
+        loading,
+        recording,
+        recordedUri,
+        currentAudioName,
+        sound,
+        isPlaying,
+        result,
+        onTogglePlayback,
+        onStartRecording,
+        onStopRecording,
+        onUploadRecordedAudio,
+        onPickAndUpload
+    } = useAudioProcessor(EVALUATE_URL);
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -50,7 +37,7 @@ export default function Evaluate() {
             <Text style={[typography.title, { marginTop: 70 }]}>Evaluate audio</Text>
 
             <View style={styles.loadingContainer}>
-                {loading && <ActivityIndicator size="large" color={colors.green} />}
+                {loading && <ActivityIndicator size="large" color={colors.textHighlight} />}
             </View>
             <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
                 {result && !loading ?
@@ -59,32 +46,31 @@ export default function Evaluate() {
 
                         <View style={{ marginVertical: 10 }}>
                             <View style={styles.container}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={typography.subtitle}>pitch variation</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.jitter.toFixed(2))}%</Text>
-                                </View>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={typography.subtitle}>volume variation</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.shimmer.toFixed(2))}%</Text>
-                                </View>
+                                <MetricDisplay
+                                    title="pitch variation"
+                                    value={`${Number(result.jitter.toFixed(2))}%`}
+                                />
+                                <MetricDisplay
+                                    title="volume variation"
+                                    value={`${Number(result.shimmer.toFixed(2))}%`}
+                                />
                             </View>
                             <View style={styles.container}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={typography.subtitle}>voice cleanliness</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.hnr.toFixed(2))} dB</Text>
-                                </View>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={typography.subtitle}>background noise</Text>
-                                    <Text style={typography.metric}>{Number(result.audio_metrics.snr.toFixed(2))} dB</Text>
-                                </View>
+                                <MetricDisplay
+                                    title="voice cleanliness"
+                                    value={`${Number(result.harmonicity.toFixed(2))} dB`}
+                                />
+                                <MetricDisplay
+                                    title="background noise"
+                                    value={`${Number(result.snr.toFixed(2))} dB`}
+                                />
                             </View>
                         </View>
 
                         <Text style={[typography.audio, { alignSelf: 'center' }]}>Score</Text>
 
                         <View style={{ alignItems: 'center', marginVertical: 10 }}>
-
-                            <Text style={typography.metric}>{Number(result.score.score.toFixed(0))}/100</Text>
+                            <Text style={typography.metric}>{Number(result.quality_score.toFixed(0))}/100</Text>
                         </View>
 
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
@@ -100,36 +86,16 @@ export default function Evaluate() {
                 }
             </ScrollView >
 
-
-            <View style={[styles.bottomBar, { opacity: !loading ? 1 : 0 }]}
-                pointerEvents={loading ? 'none' : 'auto'}
-            >
-
-                <View style={{ marginBottom: 20 }}>
-                    <View style={{ alignItems: 'center' }}>
-                        {recording ? (
-                            <PlaybackControlBtn onPress={onStopRecording}>
-                                <Icon name='stopRecording' width={40} height={40}></Icon>
-                            </PlaybackControlBtn>
-                        ) : (
-                            <PlaybackControlBtn onPress={onStartRecording}>
-                                <Icon name='microphone' width={40} height={40}></Icon>
-                            </PlaybackControlBtn>
-                        )}
-                    </View>
-
-                    <View style={{ opacity: recordedUri && !loading ? 1 : 0, marginBottom: 0, marginTop: 10 }}
-                    >
-                        <PrimaryBtn title="Evaluate recording" onPress={onUploadRecordedAudio} />
-                    </View>
-                </View>
-
-                <PrimaryBtn
-                    title='Upload audio'
-                    onPress={onPickAndUpload}
-                ></PrimaryBtn>
-
-            </View>
+            <AudioBottomBar
+                actionTitle="Evaluate recording"
+                loading={loading}
+                recording={recording}
+                recordedUri={recordedUri}
+                onStartRecording={onStartRecording}
+                onStopRecording={onStopRecording}
+                onUploadRecordedAudio={onUploadRecordedAudio}
+                onPickAndUpload={onPickAndUpload}
+            />
 
         </View >
     );

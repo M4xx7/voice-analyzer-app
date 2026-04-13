@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Text, View, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { typography } from './styles/typography';
 import Icon from '../components/Icon';
 import { colors } from './styles/colors';
@@ -10,44 +10,36 @@ import { togglePlayback } from '../utils/togglePlayback';
 import { startRecording, stopRecording } from '../utils/recording';
 import { ANALYZE_URL } from './constants/constants'
 import { pickAndUpload, uploadRecordedAudio } from '../utils/upload';
+import AudioBottomBar from '@/components/AudioBottomBar';
+import MetricDisplay from '@/components/MetricDisplay';
+import { useAudioProcessor } from '@/hooks/useAudioProcessor';
 
 
 export default function Analyze() {
 
     const API_URL = ANALYZE_URL
 
-    const [loading, setLoading] = useState(false);
-    const [recording, setRecording] = useState(null);
-    const [recordedUri, setRecordedUri] = useState(null);
-    const [currentAudioName, setCurrentAudioName] = useState("");
-    const [uploadedUri, setUploadedUri] = useState(null);
-    const [sound, setSound] = useState(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [result, setResult] = useState(null);
-    const iconSize = 20;
-
-    const onTogglePlayback = async () => {
-        await togglePlayback(isPlaying, sound, setIsPlaying);
-    }
-    const onStartRecording = async () => {
-        await startRecording(setRecording);
-    }
-    const onStopRecording = async () => {
-        await stopRecording(recording, setRecording, setRecordedUri, setCurrentAudioName);
-    }
-    const onUploadRecordedAudio = async () => {
-        await uploadRecordedAudio(API_URL, recordedUri, setRecordedUri, setLoading, setResult, setIsPlaying, setSound);
-    }
-    const onPickAndUpload = async () => {
-        await pickAndUpload(API_URL, setCurrentAudioName, setUploadedUri, setLoading, setResult, setIsPlaying, setSound);
-    }
+    const {
+        loading,
+        recording,
+        recordedUri,
+        currentAudioName,
+        sound,
+        isPlaying,
+        result,
+        onTogglePlayback,
+        onStartRecording,
+        onStopRecording,
+        onUploadRecordedAudio,
+        onPickAndUpload
+    } = useAudioProcessor(API_URL);
 
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.background }}>
 
             <View style={styles.loadingContainer}>
-                {loading && <ActivityIndicator size="large" color={colors.green} />}
+                {loading && <ActivityIndicator size="large" color={colors.textHighlight} />}
             </View>
             <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
                 <Text style={[typography.title, { marginTop: 70 }]}>Analyze audio</Text>
@@ -58,43 +50,37 @@ export default function Analyze() {
                         }]}>Audio: {currentAudioName}</Text>
                         <Text style={[typography.subtitle, { margin: 30 }]}>{result.transcription.content}</Text>
                         <View style={styles.container}>
-                            <View style={{ alignItems: 'center' }}>
-                                <View style={styles.iconWrapper}>
-                                    <Icon name='language' width={iconSize} height={iconSize} />
-                                    <Text style={typography.body}>language</Text>
-                                </View>
-                                <Text style={typography.metric}>{result.transcription.language}</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <View style={styles.iconWrapper}>
-                                    <Icon name='words' width={iconSize} height={iconSize} />
-                                    <Text style={typography.body}>words</Text>
-                                </View>
-                                <Text style={typography.metric}>{result.transcription.word_count}</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <View style={styles.iconWrapper}>
-                                    <Icon name='speedometer' width={iconSize} height={iconSize} />
-                                    <Text style={typography.body}>wpm</Text>
-                                </View>
-                                <Text style={typography.metric}>{Math.round(result.transcription.words_per_minute)}</Text>
-                            </View>
+
+                            <MetricDisplay
+                                title={"language"}
+                                value={result.transcription.language}
+                                iconName="language"
+                            />
+                            <MetricDisplay
+                                title={"words"}
+                                value={result.transcription.word_count}
+                                iconName="words"
+                            />
+                            <MetricDisplay
+                                title={"wpm"}
+                                value={result.transcription.words_per_minute}
+                                iconName="speedometer"
+                            />
+
                         </View>
                         <View style={styles.container}>
-                            <View style={{ alignItems: 'center' }}>
-                                <View style={styles.iconWrapper}>
-                                    <Icon name='speech' width={iconSize} height={iconSize} />
-                                    <Text style={typography.body}>speech intensity</Text>
-                                </View>
-                                <Text style={typography.metric}>{result.metrics.speech_intensity}</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <View style={styles.iconWrapper}>
-                                    <Icon name='sound' width={iconSize} height={iconSize} />
-                                    <Text style={typography.body}>audio purity</Text>
-                                </View>
-                                <Text style={typography.metric}>{result.metrics.purity_label}</Text>
-                            </View>
+
+                            <MetricDisplay
+                                title="speech intensity"
+                                value={result.metrics.speech_intensity}
+                                iconName="speech"
+                            />
+                            <MetricDisplay
+                                title="audio purity"
+                                value={result.metrics.purity.label}
+                                iconName="sound"
+                            />
+
                         </View>
 
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
@@ -110,36 +96,16 @@ export default function Analyze() {
                 }
             </ScrollView >
 
-
-            <View style={[styles.bottomBar, { opacity: !loading ? 1 : 0 }]}
-                pointerEvents={loading ? 'none' : 'auto'}
-            >
-
-                <View style={{ marginBottom: 20 }}>
-                    <View style={{ alignItems: 'center' }}>
-                        {recording ? (
-                            <PlaybackControlBtn onPress={onStopRecording}>
-                                <Icon name='stopRecording' width={40} height={40}></Icon>
-                            </PlaybackControlBtn>
-                        ) : (
-                            <PlaybackControlBtn onPress={onStartRecording}>
-                                <Icon name='microphone' width={40} height={40}></Icon>
-                            </PlaybackControlBtn>
-                        )}
-                    </View>
-
-                    <View style={{ opacity: recordedUri && !loading ? 1 : 0, marginBottom: 0, marginTop: 10 }}
-                    >
-                        <PrimaryBtn title="Analyze recording" onPress={onUploadRecordedAudio} />
-                    </View>
-                </View>
-
-                <PrimaryBtn
-                    title='Upload audio'
-                    onPress={onPickAndUpload}
-                ></PrimaryBtn>
-
-            </View>
+            <AudioBottomBar
+                actionTitle="Analyze recording"
+                loading={loading}
+                recording={recording}
+                recordedUri={recordedUri}
+                onStartRecording={onStartRecording}
+                onStopRecording={onStopRecording}
+                onUploadRecordedAudio={onUploadRecordedAudio}
+                onPickAndUpload={onPickAndUpload}
+            />
 
         </View >
     );

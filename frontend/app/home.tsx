@@ -1,8 +1,6 @@
 import { Link, useRouter } from "expo-router";
 import { View, Text, Button } from "react-native";
-import { colors } from "./styles/colors";
 import { typography } from "./styles/typography";
-import PrimaryBtn from "@/components/PrimaryBtn";
 import PageBtn from "../components/PageBtn";
 
 
@@ -13,7 +11,7 @@ export default function Home() {
   return (
     <View>
       <Text style={[typography.title, { marginTop: 100 }]}>Audio analyzer</Text>
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 150}}>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 150 }}>
         <PageBtn
           onPress={() => router.push('/analyze')}
           iconName={'analysis'}

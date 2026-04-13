@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import axios from 'axios';
 
 
-export async function pickAndUpload(apiUrl: string, setCurrentAudioName: (value: string) => void, setUploadedUri: (value) => void, setLoading: (value: boolean) => void, setResult: (value) => void, setIsPlaying: (value: boolean) => void, setSound: (value: Audio.Sound) => void) {
+export async function pickAndUpload(apiUrl: string, setCurrentAudioName: (value: string) => void, setLoading: (value: boolean) => void, setResult: (value) => void, setIsPlaying: (value: boolean) => void, setSound: (value: Audio.Sound) => void) {
 
     try {
         const file = await DocumentPicker.getDocumentAsync({
@@ -19,7 +19,6 @@ export async function pickAndUpload(apiUrl: string, setCurrentAudioName: (value:
 
         const selectedFile = file.assets[0];
         setCurrentAudioName(selectedFile.name);
-        setUploadedUri(selectedFile.uri);
         setLoading(true);
 
         const formData = new FormData();
@@ -29,7 +28,7 @@ export async function pickAndUpload(apiUrl: string, setCurrentAudioName: (value:
             type: selectedFile.mimeType || 'audio/wav',
         });
 
-            const response = await axios.post(apiUrl, formData, {
+        const response = await axios.post(apiUrl, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
 
