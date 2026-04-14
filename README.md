@@ -1,14 +1,3 @@
----
-title: Voice Analyzer API
-emoji: 🎧
-colorFrom: blue
-colorTo: purple
-sdk: docker
-app_port: 8000
-pinned: false
----
-
-
 # Voice Analyzer
 
 <img src="docs/screenshots/home.jpg" width="250"/>

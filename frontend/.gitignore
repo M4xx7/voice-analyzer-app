@@ -43,4 +43,4 @@ app-example
 /android
 
 # audio samples
-backend/samples/*.wav
+*.wav
